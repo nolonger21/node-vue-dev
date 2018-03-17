@@ -2,15 +2,16 @@ var path = require('path')
 var webpack = require('webpack')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 
+var ipInfo = require("../ip").client();
+
 module.exports = {
   entry: {
-    index:'./src/index.js',
-    user:'./src/user.js'
+    index:'./src/index.js'
   },
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
-    filename: 'build.[name].js'
+    filename: '[name].js'
   },
   module: {
     rules: [
@@ -21,7 +22,7 @@ module.exports = {
           loaders: {            
             'scss': ExtractTextPlugin.extract('vue-style-loader!css-loader!sass-loader'),
             'sass': ExtractTextPlugin.extract('vue-style-loader!css-loader!sass-loader?indentedSyntax')
-          }         
+          }
         }
       },
       {
@@ -37,8 +38,12 @@ module.exports = {
         }
       },
       {
-          test: /\.scss$/,
-          loader:ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader!sass-loader' })
+        test: /\.scss$/,
+        loader:ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader!sass-loader' })
+      },
+      {
+        test: /\.css$/,
+        loader: "style-loader!css-loader"
       }
     ]
   },
@@ -52,7 +57,10 @@ module.exports = {
   ],
   devServer: {
     historyApiFallback: true,
-    noInfo: true
+    noInfo: true,
+    port:ipInfo.port,
+    host:ipInfo.ip,
+    disableHostCheck: true
   },
   performance: {
     hints: false
@@ -61,8 +69,7 @@ module.exports = {
 }
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map'
-  // http://vue-loader.vuejs.org/en/workflow/production.html
+  module.exports.devtool = 'false'
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
       'process.env': {
