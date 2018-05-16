@@ -11994,7 +11994,7 @@ class TodoModel {
 		this.date = dataModel.date;
 		this.platform = dataModel.platform;
 		this.type = dataModel.type;
-		this.merchant = dataModel.merchant;
+		this.title = dataModel.title;
 		this.todo = dataModel.todo;
 		this.author = dataModel.author;
 	}
@@ -33562,14 +33562,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			currId: '',
 			platform: '',
 			type: '',
-			merchant: '',
+			title: '',
 			todo: ''
 		};
 	},
 	created() {
-		this.getTodos();
+		this.getTodos("todo");
+		//this.getTodos("musttodo");
 		__WEBPACK_IMPORTED_MODULE_2__util_socket__["a" /* default */].on('getTodos', () => {
-			this.getTodos();
+			this.getTodos("todo");
 		});
 	},
 	filters: {
@@ -33582,7 +33583,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			let _self = this;
 			_self.platform = '';
 			_self.type = '';
-			_self.merchant = '';
+			_self.title = '';
 			_self.todoclear = '';
 			this.$refs.editor.onEditorClear();
 			this.$refs["platform"]["style"]["color"] = "";
@@ -33592,14 +33593,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			let _self = this;
 			let author = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__util_cacheManger__["b" /* getCache */])("userName");
 			let date = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__util_tools__["a" /* getDate */])(1);
-			let params = { date: date, platform: _self.platform, type: _self.type, merchant: _self.merchant, todo: escape(_self.todo), author: author };
-			if (_self.merchant && _self.todo) {
+			let params = { date: date, platform: _self.platform, type: _self.type, title: _self.title, todo: escape(_self.todo), author: author };
+			if (_self.title && _self.todo) {
 				__WEBPACK_IMPORTED_MODULE_0__util_httpHelper__["a" /* default */].post(_self, "addTodo", params, data => {
 					if (data.body.code < 0) {
 						alert(data.body.description);
 						return;
 					}
-					let newUser = { id: _self.currId++, date: date, platform: _self.platform, type: _self.type, merchant: _self.merchant, todo: _self.todo, author: _self.author };
+					let newUser = { id: _self.currId++, date: date, platform: _self.platform, type: _self.type, title: _self.title, todo: _self.todo, author: _self.author };
 					_self.todoList.unshift(newUser);
 					_self.clearFrom();
 					__WEBPACK_IMPORTED_MODULE_2__util_socket__["a" /* default */].emit('todosUpdata');
@@ -33617,9 +33618,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				alert('请填写完善！');
 			}
 		},
-		getTodos() {
+		getTodos(reqType) {
 			let _self = this;
 			var params = {};
+			if (reqType) {
+				params.reqType = reqType;
+			} else {
+				params.reqType = "todo";
+			}
 			__WEBPACK_IMPORTED_MODULE_0__util_httpHelper__["a" /* default */].post(_self, "getTodos", params, data => {
 				if (data.body.code < 0) {
 					alert(data.body.description);
@@ -33627,22 +33633,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				}
 				let result = data.body;
 				if (result.code > 0 && result.data) {
-					let newResult = result.data.reverse();
-					_self.todosLength = newResult.length;
-					let len = 30;
-					if (newResult.length < 30) {
-						len = newResult.length;
-					}
-					let arr = [];
-					for (let i = 0; i < len; i++) {
-						let todoModel = new __WEBPACK_IMPORTED_MODULE_1__model_todoModel__["a" /* default */](newResult[i]);
-						arr.push(todoModel);
-					}
-					_self.todoList = arr;
-					if (_self.todoList[0]) {
-						_self.currId = _self.todoList[0].id + 1;
-					} else {
-						_self.currId = 1;
+					if (params.reqType == "todo") {
+						let newResult = result.data.reverse();
+						_self.todosLength = newResult.length;
+						let len = 30;
+						if (newResult.length < 30) {
+							len = newResult.length;
+						}
+						let arr = [];
+						for (let i = 0; i < len; i++) {
+							let todoModel = new __WEBPACK_IMPORTED_MODULE_1__model_todoModel__["a" /* default */](newResult[i]);
+							arr.push(todoModel);
+						}
+						_self.todoList = arr;
+						if (_self.todoList[0]) {
+							_self.currId = _self.todoList[0].id + 1;
+						} else {
+							_self.currId = 1;
+						}
+					} else if (params.reqType == "musttodo") {
+						_self.mustTodoList = result.data;
 					}
 				} else {
 					if (result.description) {
@@ -57403,7 +57413,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "todolist"
   }, [_c('h2', [_vm._v("待办事项")]), _vm._v(" "), _vm._m(0), _vm._v(" "), _vm._l((_vm.todoList), function(item, index) {
-    return _c('div', [_c('ul', [_c('li', [_vm._v(_vm._s(_vm.todosLength - index))]), _vm._v(" "), _c('li', [_vm._v(_vm._s(item.merchant))])]), _vm._v(" "), _c('p', {
+    return _c('div', [_c('ul', [_c('li', [_vm._v(_vm._s(_vm.todosLength - index))]), _vm._v(" "), _c('li', [_vm._v(_vm._s(item.title))])]), _vm._v(" "), _c('p', {
       staticClass: "todo",
       domProps: {
         "innerHTML": _vm._s(_vm.$options.filters.unescape(item.todo))
@@ -57588,7 +57598,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "todolist"
   }, [_c('h2', [_vm._v("待办事项")]), _vm._v(" "), _vm._m(0), _vm._v(" "), _vm._l((_vm.todoList), function(item, index) {
-    return _c('div', [_c('ul', [_c('li', [_vm._v(_vm._s(_vm.todosLength - index))]), _vm._v(" "), _c('li', [_vm._v(_vm._s(item.merchant))])]), _vm._v(" "), _c('p', {
+    return _c('div', [_c('ul', [_c('li', [_vm._v(_vm._s(_vm.todosLength - index))]), _vm._v(" "), _c('li', [_vm._v(_vm._s(item.title))])]), _vm._v(" "), _c('p', {
       staticClass: "todo",
       domProps: {
         "innerHTML": _vm._s(_vm.$options.filters.unescape(item.todo))
@@ -57670,8 +57680,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     directives: [{
       name: "model",
       rawName: "v-model.trim",
-      value: (_vm.merchant),
-      expression: "merchant",
+      value: (_vm.title),
+      expression: "title",
       modifiers: {
         "trim": true
       }
@@ -57681,12 +57691,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "placeholder": "标题"
     },
     domProps: {
-      "value": (_vm.merchant)
+      "value": (_vm.title)
     },
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.merchant = $event.target.value.trim()
+        _vm.title = $event.target.value.trim()
       },
       "blur": function($event) {
         _vm.$forceUpdate()
