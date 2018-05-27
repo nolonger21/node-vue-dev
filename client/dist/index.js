@@ -34067,6 +34067,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -34080,6 +34081,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       userName: "",
       passWord: "",
       rePassword: "",
+      darkCode: "",
       msg: "",
       show: true,
       show2: true
@@ -34088,44 +34090,46 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   methods: {
     regUser() {
       let _self = this;
-      if (!_self.userName) {
-        _self.msg = "姓名为空！";
-        return;
-      } else if (_self.userName.length > 12 || _self.userName.length < 5) {
-        _self.msg = "用户名长度请设定5-12位！";
-        return;
-      } else if (!_self.passWord || !_self.rePassword) {
-        _self.msg = "密码为空！";
-        return;
-      } else if (_self.passWord.length > 12 || _self.passWord.length < 5) {
-        _self.msg = "密码长度请设定5-12位！";
-        return;
-      } else if (_self.passWord !== _self.rePassword) {
-        _self.msg = "密码不一致！";
-        return;
-      }
-      let md5_userName = __WEBPACK_IMPORTED_MODULE_1__util_crypto__["a" /* default */].createHash('md5').update(_self.userName).digest('hex');
-      let md5_passWord = __WEBPACK_IMPORTED_MODULE_1__util_crypto__["a" /* default */].createHash('md5').update(_self.passWord).digest('hex');
-      let params = {
-        userName: _self.userName,
-        passWord: md5_passWord,
-        creatDate: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__util_tools__["a" /* getDate */])(1),
-        lastDate: ""
-      };
-      params.lastDate = params.creatDate;
-      __WEBPACK_IMPORTED_MODULE_0__util_httpHelper__["a" /* default */].post(_self, "regUser", params, data => {
-        _self.msg = data.body.description;
-        if (data.body.code === 1) {
-          _self.show2 = false;
-          __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__util_cacheManger__["c" /* setCache */])("userName", _self.userName);
-          __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__util_cacheManger__["c" /* setCache */])("creatDate", params.creatDate);
-          __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__util_cacheManger__["c" /* setCache */])("lastDate", params.lastDate);
-          __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__util_cookie__["c" /* setCookie */])("isLogin", md5_userName, 30);
-          _self.$router.push('/index/main');
+      if (_self.darkCode == "if") {
+        if (!_self.userName) {
+          _self.msg = "姓名为空！";
+          return;
+        } else if (_self.userName.length > 12 || _self.userName.length < 5) {
+          _self.msg = "用户名长度请设定5-12位！";
+          return;
+        } else if (!_self.passWord || !_self.rePassword) {
+          _self.msg = "密码为空！";
+          return;
+        } else if (_self.passWord.length > 12 || _self.passWord.length < 5) {
+          _self.msg = "密码长度请设定5-12位！";
+          return;
+        } else if (_self.passWord !== _self.rePassword) {
+          _self.msg = "密码不一致！";
+          return;
         }
-      }, err => {
-        _self.msg = "注册失败!";
-      });
+        let md5_userName = __WEBPACK_IMPORTED_MODULE_1__util_crypto__["a" /* default */].createHash('md5').update(_self.userName).digest('hex');
+        let md5_passWord = __WEBPACK_IMPORTED_MODULE_1__util_crypto__["a" /* default */].createHash('md5').update(_self.passWord).digest('hex');
+        let params = {
+          userName: _self.userName,
+          passWord: md5_passWord,
+          creatDate: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__util_tools__["a" /* getDate */])(1),
+          lastDate: ""
+        };
+        params.lastDate = params.creatDate;
+        __WEBPACK_IMPORTED_MODULE_0__util_httpHelper__["a" /* default */].post(_self, "regUser", params, data => {
+          _self.msg = data.body.description;
+          if (data.body.code === 1) {
+            _self.show2 = false;
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__util_cacheManger__["c" /* setCache */])("userName", _self.userName);
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__util_cacheManger__["c" /* setCache */])("creatDate", params.creatDate);
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__util_cacheManger__["c" /* setCache */])("lastDate", params.lastDate);
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__util_cookie__["c" /* setCookie */])("isLogin", md5_userName, 30);
+            _self.$router.push('/index/main');
+          }
+        }, err => {
+          _self.msg = "注册失败!";
+        });
+      }
     },
     clearInfo() {
       let _self = this;
@@ -57774,6 +57778,26 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "input": function($event) {
         if ($event.target.composing) { return; }
         _vm.rePassword = $event.target.value
+      }
+    }
+  }), _vm._v(" "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.darkCode),
+      expression: "darkCode"
+    }],
+    attrs: {
+      "type": "text",
+      "placeholder": "注册暗号"
+    },
+    domProps: {
+      "value": (_vm.darkCode)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.darkCode = $event.target.value
       }
     }
   }), _vm._v(" "), _c('button', {
